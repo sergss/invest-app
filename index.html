@@ -1,37 +1,159 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title></title>
-    <style>
-        th,td {
-            border: 1px solid #ddd;
-        }
-    </style>
-</head>
-<body>
-<form id="portfolioForm">
-    <label for="startDate">Start Date (MM/DD/YYYY): </label>
-    <input id="startDate" required type="text" value="08.01.2008">
-    <br>
-    <label for="tillNow">Till Now: </label>
-    <input id="tillNow" type="checkbox">
-    <br>
-    <label for="monthsQuantity">Months Quantity: </label>
-    <input id="monthsQuantity" required step="1" type="number" value="10">
-    <br>
-    <label for="stockSymbol">Stock Symbol: </label>
-    <input id="stockSymbol" required type="text" value="BA">
-    <br>
-    <label for="investmentAmount">Investment Amount ($): </label>
-    <input id="investmentAmount" required step="1" type="number" value="100">
-    <br>
-    <button type="submit">Calculate</button>
-</form>
-<table id="resultTable"></table>
-<script type="text/javascript" src="bundle.js"></script>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title></title>
+        <style>
+            body {
+                font-family: Arial,sans-serif;
+                font-size: 14px;
+            }
+
+            #portfolio-form {
+                width: 400px;
+            }
+
+            .form-field {
+                display: flex;
+                align-items: center;
+                margin-bottom: .5rem;
+            }
+
+            .form-field label {
+                width: 180px;
+            }
+
+            .form-field input {
+                width: 50px;
+            }
+
+            table {
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            th,td {
+                border: 1px solid #ddd;
+            }
+
+            #table-wrapper {
+                max-height: 300px;
+                position: relative;
+                overflow-x: auto;
+                overflow-y: visible;
+                margin-bottom: 2rem;
+            }
+
+            #result-table {
+                width: auto;
+                border-collapse: separate;
+                border-spacing: 0;
+            }
+
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+            }
+
+            th:first-child,
+            td:first-child {
+                position: sticky;
+                left: 0;
+                background-color: white;
+                z-index: 2;
+                border-right: none;
+            }
+
+            th {
+                position: sticky;
+                top: 0;
+                background-color: white;
+                z-index: 2;
+            }
+
+            thead th:first-child {
+                z-index: 3;
+            }
+
+            #data-wrapper {
+                margin-top: 1rem;
+            }
+
+            .pointer {
+                cursor: pointer;
+            }
+
+            .margin-left {
+                margin-left: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <form id="portfolio-form">
+            <div class="form-field">
+                <label for="start-date">Start Date (MM/YYYY): </label>
+                <input id="start-date" required type="text" value="01.2020">
+            </div>
+            <div class="form-field">
+                <label class="pointer" for="till-now">Till Now: </label>
+                <input class="pointer" id="till-now" type="checkbox" checked>
+            </div>
+            <div class="form-field" id="months-quantity-wrapper" hidden>
+                <label for="months-quantity">Months Quantity: </label>
+                <input id="months-quantity" required step="1" type="number" value="10">
+            </div>
+            <div class="form-field">
+                <label for="stock-symbol">Enter Stock Symbol: </label>
+                <input id="stock-symbol" required type="text" value="SPY" placeholder="enter stock">
+            </div>
+            <div class="form-field">
+                <label for="stock-dropdown">Or select Stock: </label>
+                <select id="stock-dropdown">
+                    <option disabled selected value>select stock </option>
+                    <option value="SPY">SPDR S&P 500 ETF SPY</option>
+                    <option value="BA">Boeing BA</option>
+                    <option value="BAC">Bank of America Corp BAC</option>
+                    <option value="NFLX">Netflix NFLX</option>
+                    <option value="ZM">Zoom ZM</option>
+                    <option value="AAPL">Apple AAPL</option>
+                    <option value="MSFT">Microsoft MSFT</option>
+                    <option value="AMZN">Amazon AMZN</option>
+                    <option value="NVDA">Nvidia NVDA</option>
+                    <option value="GOOGL">Alphabet GOOGL</option>
+                    <option value="TSLA">Tesla TSLA</option>
+                    <option value="META">Meta Platforms META</option>
+                    <option value="UNH">Unitedhealth Group UNH</option>
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="investment-amount">Investment Amount ($): </label>
+                <input id="investment-amount" required step="1" type="number" value="50">
+            </div>
+            <button class="pointer" type="submit">Calculate</button>
+        </form>
+        <div id="data-wrapper" hidden>
+            <label class="pointer" for="show-table">Table: </label>
+            <input class="pointer" id="show-table" type="checkbox" checked>
+            <label class="pointer margin-left" for="show-chart">Chart: </label>
+            <input class="pointer" id="show-chart" type="checkbox" checked>
+
+            <div id="table-controls">
+                <label class="pointer" for="table-vertical">Table-vertical: </label>
+                <input class="pointer" id="table-vertical" type="radio" name="table-view" checked>
+                <label class="pointer margin-left" for="table-horizontal">Table-horizontal: </label>
+                <input class="pointer" id="table-horizontal" type="radio" name="table-view">
+            </div>
+            <div id="table-wrapper">
+                <table id="result-table"></table>
+            </div>
+            <div id="chart-wrapper">
+                <canvas id="chart"></canvas>
+            </div>
+        </div>
+        <script type="text/javascript" src="bundle.js"></script>
+    </body>
 </html>
